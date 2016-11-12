@@ -19,3 +19,5 @@ Player.o: Player.h Player.cpp
 Game.o: Game.h Game.cpp
 	$(CC) -c -o Game.o Game.cpp $(CFLAGS)
 
+clean:
+	rm *.o
