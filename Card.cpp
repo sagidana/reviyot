@@ -28,6 +28,24 @@ bool operator!= (Card &c1, Card &c2)
 }
  
 
+string CardValue::toString()
+{
+	if (this->number >= 2)
+		return std::to_string(this->number);
+	switch (this->figure)
+	{
+		case Figure::Jack:
+			return "J";
+		case Figure::Queen:
+			return "Q";
+		case Figure::King:
+			return "K";
+		case Figure::Ace:
+			return "A";
+	}
+	return "";
+}
+
 /* C-tors & D-tors
  * -----------------------------------------------------------
  */

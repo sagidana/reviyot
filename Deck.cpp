@@ -33,6 +33,15 @@ Deck::Deck(const Deck & other)
 {
 	uninitializeDeck();
 	
+	this->_maximumNumeric = other._maximumNumeric;
+	
+	for (auto it=other._cards.begin(); it!=other._cards.end(); ++it)
+	{
+		if (NumericCard * nCard = dynamic_cast<NumericCard * >(*it))		
+			this->_cards.push_back(new NumericCard(*nCard));
+		else if(FigureCard * fCard = dynamic_cast<FigureCard * >(*it))
+			this->_cards.push_back(new FigureCard(*fCard));
+	}
 }
 
 Deck::~Deck()
@@ -90,6 +99,22 @@ void Deck::uninitializeDeck()
 /* Public methods:
  * -----------------------------------------------------------
  */
+
+Deck & Deck::operator=(const Deck & other)
+{
+	uninitializeDeck();
+	
+	this->_maximumNumeric = other._maximumNumeric;
+	
+	for (auto it=other._cards.begin(); it!=other._cards.end(); ++it)
+	{
+		if (NumericCard * nCard = dynamic_cast<NumericCard * >(*it))		
+			this->_cards.push_back(new NumericCard(*nCard));
+		else if(FigureCard * fCard = dynamic_cast<FigureCard * >(*it))
+			this->_cards.push_back(new FigureCard(*fCard));
+	}
+	return *this;
+}
 
 void Deck::setMaximumNumeric(int maximumNumeric)
 {

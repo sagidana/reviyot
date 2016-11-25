@@ -26,6 +26,8 @@ public:
 	Deck(const Deck & other);
 	~Deck();
 
+	Deck & operator=(const Deck & other); /* copy assignment */
+	
 	void setMaximumNumeric(int maximumNumeric);
 	void pushCardFront(Card* card);
 	Card* fetchCard();   	/* Returns the top card of the deck and remove it rom the deck */

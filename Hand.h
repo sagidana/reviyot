@@ -14,9 +14,13 @@ class Hand
 {
 protected:
 	list<Card * > _cards;
+	void uninitializeCards();
 public:
 	Hand();
+	Hand(const Hand & other);
 	virtual ~Hand();
+	
+	Hand & operator=(const Hand & other); /* copy assignment */
 	bool addCard(Card &card);
 	bool removeCard(Card &card);
 	int getNumberOfCards(); 		/* Get the number of cards in hand */

@@ -37,6 +37,7 @@ struct CardValue
 	int number;
 	Figure figure;
 	CardValue(){ number = 0; figure = Figure::Jack; }
+	string toString();
     friend bool operator== (const CardValue &cv1, const CardValue &cv2);
     friend bool operator!= (const CardValue &cv1, const CardValue &cv2);
 };

@@ -9,6 +9,11 @@
 
 Player::Player(string name, int position) : _name(name), _position(position) { }
 
+Player::Player(const Player & other)
+{
+	copyPlayer(&other);
+}
+
 Player::~Player() { }
 
 /* Private methods:
@@ -36,6 +41,22 @@ Card* Player::findCard(CardValue card_value)
 /* Protected methods:
  * -----------------------------------------------------------
  */
+ 
+void Player::copyPlayer(const Player * other)
+{
+	uninitializeCards();
+	
+	for (auto it=other->_cards.begin(); it!=other->_cards.end(); ++it)
+	{
+		if (NumericCard * nCard = dynamic_cast<NumericCard * >(*it))		
+			this->_cards.push_back(new NumericCard(*nCard));
+		else if(FigureCard * fCard = dynamic_cast<FigureCard * >(*it))
+			this->_cards.push_back(new FigureCard(*fCard));
+	}
+	
+	this->_name = other->_name;
+	this->_position = other->_position;
+}
 
 Player* Player::getPlayerByPosition(int position, vector<Player*> players)
 {
@@ -71,6 +92,14 @@ Player* Player::getMostCardsPlayer(vector<Player*> players)
 /* Public methods:
  * -----------------------------------------------------------
  */
+ 
+Player & Player::operator=(const Player & other)
+{
+	copyPlayer(&other);
+	
+	return *this;
+}
+ 
 string Player::getName() { return this->_name; }
 
 int Player::getPosition() { return this->_position; }
@@ -79,8 +108,12 @@ bool Player::isFinished() { return getNumberOfCards() == 0; }
 
 void Player::AddCardsFromDeck(int numberOfCards, Deck* deck)
 {
-	for (int index = 0; index < numberOfCards; index++)	
-		addCard(*(deck->fetchCard()));
+	for (int index = 0; index < numberOfCards; index++)
+	{
+		Card* card = deck->fetchCard();
+		if (card)	
+			addCard(*card);
+	}
 	
 	discardSets();
 }
@@ -100,6 +133,21 @@ list<Card*> Player::giveMePlease(CardValue card_value)
 		ret_cards.push_back(card);
 		card = findCard(card_value);
 	}
+	
+	return ret_cards;
+}
+
+list<Card*> Player::giveMePlease(CardValue card_value, Deck * deck)
+{
+	list<Card*> ret_cards = giveMePlease(card_value);
+
+	if (ret_cards.size() > 0)
+	{
+		AddCardsFromDeck(ret_cards.size(), deck);
+
+		discardSets();
+	}
+	
 	return ret_cards;
 }
 
@@ -114,7 +162,6 @@ void Player::discardSets()
 	for (auto it = this->_cards.begin(); it != this->_cards.end(); ++it)
 	{
 		CardValue curr_card_value = (*it)->getCardValue();
-
 
 		if (card_value == curr_card_value)
 		{
@@ -133,7 +180,6 @@ void Player::discardSets()
 	for (auto it_1 = values_to_remove.begin(); it_1 != values_to_remove.end(); ++ it_1)
 	{
 		list<Card*> temp_cards = giveMePlease(*it_1);
-
 		for (auto it_2 = temp_cards.begin(); it_2 != temp_cards.end(); ++it_2)
 			delete *it_2;					/* Freeing memory. */
 	}
@@ -148,16 +194,29 @@ void Player::discardSets()
 
 PlayerType1::PlayerType1(string name, int position) : Player(name, position) { }
 
+PlayerType1::PlayerType1(const PlayerType1 & other) : Player(other._name, other._position)
+{
+	copyPlayer(&other);
+}
+
 /* Public methods
  * -----------------------------------------------------------
  */
+
+PlayerType1 & PlayerType1::operator=(const PlayerType1 & other)
+{
+	copyPlayer(&other);
+	
+	return *this;
+}
 
 void PlayerType1::play(Deck* deck, vector<Player * > players)
 {
 	CardValue card_value = getMostAppearancesCard();
 	Player * most_cards_player = getMostCardsPlayer(players);
 	
-	list<Card*> given_cards = most_cards_player->giveMePlease(card_value);
+	cout << getName() << " asked " << most_cards_player->getName() << " for the value " << card_value.toString() << endl;
+	list<Card*> given_cards = most_cards_player->giveMePlease(card_value, deck);
 	
 	if (given_cards.size() == 0)
 	{
@@ -199,7 +258,7 @@ CardValue PlayerType1::getMostAppearancesCard()
 		else
 			current_card_times = 1;	
 		
-		last_card_value = curr_card_value;	/* Update the last card value */
+		last_card_value = curr_card_value;
 		
 		/* Update the card value with most appearances. */
 		if (max_times <= current_card_times)
@@ -221,16 +280,31 @@ CardValue PlayerType1::getMostAppearancesCard()
 
 PlayerType2::PlayerType2(string name, int position) : Player(name, position) { }
 
+PlayerType2::PlayerType2(const PlayerType2 & other) : Player(other._name, other._position)
+{
+	copyPlayer(&other);
+}
+
 /* Public methods
  * -----------------------------------------------------------
  */
+
+PlayerType2 & PlayerType2::operator=(const PlayerType2 & other)
+{
+	copyPlayer(&other);
+	
+	return *this;
+}
+
 
 void PlayerType2::play(Deck* deck, vector<Player * > players)
 {
 	CardValue card_value = getLeastAppearancesCard();
 	Player * most_cards_player = getMostCardsPlayer(players);
 	
-	list<Card*> given_cards = most_cards_player->giveMePlease(card_value);
+	cout << getName() << " asked " << most_cards_player->getName() << " for the value " << card_value.toString() << endl;
+
+	list<Card*> given_cards = most_cards_player->giveMePlease(card_value, deck);
 	
 	if (given_cards.size() == 0)
 	{
@@ -242,7 +316,7 @@ void PlayerType2::play(Deck* deck, vector<Player * > players)
 		}
 		return;
 	}
-	
+
 	for (auto it = given_cards.begin(); it != given_cards.end(); ++it)
 		addCard(**it);
 
@@ -271,10 +345,9 @@ CardValue PlayerType2::getLeastAppearancesCard()
 	
 		/* Updating the current card's apperences times. */
 		if (last_card_value == curr_card_value)
-		{
 			current_card_times++;
-		}
-		else
+
+		if ((last_card_value != curr_card_value) || (it == --this->_cards.end()))
 		{
 			/* Update the card value with most appearances. */
 			if (min_times > current_card_times)
@@ -300,6 +373,12 @@ CardValue PlayerType2::getLeastAppearancesCard()
 
 PlayerType3::PlayerType3(string name, int position) : Player(name, position), _nextAskedPlayer(0) { }
 
+PlayerType3::PlayerType3(const PlayerType3 & other) : Player(other._name, other._position)
+{
+	copyPlayer(&other);
+	this->_nextAskedPlayer = other._nextAskedPlayer;
+}
+
 /* Protected methods
  * -----------------------------------------------------------
  */
@@ -318,20 +397,31 @@ CardValue PlayerType3::getHighestCard()
  * -----------------------------------------------------------
  */
 
+PlayerType3 & PlayerType3::operator=(const PlayerType3 & other)
+{
+	copyPlayer(&other);
+	this->_nextAskedPlayer = other._nextAskedPlayer;
+
+	return *this;
+}
+
+
 void PlayerType3::play(Deck* deck, vector<Player * > players)
 {
 	if (getPosition() == this->_nextAskedPlayer)
 	{
-		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size());
+		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1);
 	}
 
 	Player* player = getPlayerByPosition(this->_nextAskedPlayer, players);
 
-	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size()); /* Increase the position for the next turn */
+	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1); /* Increase the position for the next turn */
 
 	CardValue card_value = getHighestCard();
 
-	list<Card*> given_cards = player->giveMePlease(card_value);
+	cout << getName() << " asked " << player->getName() << " for the value " << card_value.toString() << endl;
+
+	list<Card*> given_cards = player->giveMePlease(card_value, deck);
 
 	if (given_cards.size() == 0)
 	{
@@ -359,6 +449,12 @@ void PlayerType3::play(Deck* deck, vector<Player * > players)
 
 PlayerType4::PlayerType4(string name, int position) : Player(name, position), _nextAskedPlayer(0) { }
 
+PlayerType4::PlayerType4(const PlayerType4 & other) : Player(other._name, other._position)
+{
+	copyPlayer(&other);
+	this->_nextAskedPlayer = other._nextAskedPlayer;
+}
+
 /* Protected methods
  * -----------------------------------------------------------
  */
@@ -377,20 +473,30 @@ CardValue PlayerType4::getLowestCard()
  * -----------------------------------------------------------
  */
 
+PlayerType4 & PlayerType4::operator=(const PlayerType4 & other)
+{
+	copyPlayer(&other);
+	this->_nextAskedPlayer = other._nextAskedPlayer;
+	return *this;
+}
+
+
 void PlayerType4::play(Deck* deck, vector<Player * > players)
 {
 	if (getPosition() == this->_nextAskedPlayer)
 	{
-		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size());
+		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1);
 	}
 
 	Player* player = getPlayerByPosition(this->_nextAskedPlayer, players);
 
-	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size()); /* Increase the position for the next turn */
+	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1); /* Increase the position for the next turn */
 
 	CardValue card_value = getLowestCard();
 
-	list<Card*> given_cards = player->giveMePlease(card_value);
+	cout << getName() << " asked " << player->getName() << " for the value " << card_value.toString() << endl;
+
+	list<Card*> given_cards = player->giveMePlease(card_value, deck);
 
 	if (given_cards.size() == 0)
 	{

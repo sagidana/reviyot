@@ -20,11 +20,21 @@ private:
 	bool _verbal;
 	vector<Player *> players;  	/* The list of the players */
 	Deck deck;                 	/* The deck of the game */
+	int _numberOfTurns;
 	
 	Card* createCardFromString(string card_string);
 	Player* createPlayer(string name, string type, int position);
+	Player* getPlayerByPosition(int position);
+	void uninitializePlayers();
+	void giveCardsToPlayers();
+	bool gameFinished();
+	vector<Player*> playersWithout(string playerName);
 public:
 	Game(char* configurationFile);
+	Game(const Game& other);
+	~Game();
+	
+	Game & operator=(const Game & other); /* copy assignment */
 	void init();
 	void play();
 	void printState();        	/* Print the state of the game as described in the assignment. */
