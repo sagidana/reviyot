@@ -1,11 +1,6 @@
 #include <iostream>
 
-#include <list>
-#include "Card.h"
-#include "Hand.h"
-#include "Deck.h"
-#include "Player.h"
-#include "Game.h"
+#include "../Include/Game.h"
 
 using namespace std;
 
