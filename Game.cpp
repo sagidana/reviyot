@@ -10,6 +10,7 @@
 Game::Game(char* configurationFile)
 {
 	this->_configurationFile = configurationFile;
+	this->_numberOfTurns = 0;
 }
 
 Game::Game(const Game& other)
@@ -141,7 +142,6 @@ Game & Game::operator=(const Game & other)
 
 void Game::init()
 {
-	this->_numberOfTurns = 0;
 	ifstream file(this->_configurationFile);
     string line; 
 	
@@ -188,33 +188,32 @@ void Game::init()
 
 		position++;
     }
+    
+   	giveCardsToPlayers();
 }
 
 void Game::play()
 {
-	giveCardsToPlayers();
-
 	while (!gameFinished())
 	{
-
-		printState();
-
 		Player * currentPlayer = getPlayerByPosition(this->_numberOfTurns % this->players.size());
+		
+		if (this->_verbal)
+		{
+			cout << "Turn " << this->_numberOfTurns + 1 << endl;
+			printState();
+			cout << currentPlayer->getPlayDecision(playersWithout(currentPlayer->getName())) << endl;;
+			cout << endl;
+		}
 
 		currentPlayer->play(&this->deck, playersWithout(currentPlayer->getName()));
 		
 		this->_numberOfTurns++;
-		
-		cout << endl;
 	}
-	
-	printWinner();
 }
 
 void Game::printState()
-{
-	printNumberOfTurns();
-	
+{	
 	cout << "Deck: " << this->deck.toString() << endl;
 	
 	for (auto it=this->players.begin(); it!=this->players.end(); ++it)
@@ -223,14 +222,26 @@ void Game::printState()
 
 void Game::printWinner()
 {
+	list<Player*> winners;
 	for (auto it=this->players.begin(); it!=this->players.end(); ++it)
 		if ((*it)->isFinished())
-			cout << "***** The Winner is: " << (*it)->getName() << " *****" << endl;
+			winners.push_back(*it);
+	if (winners.size() == 1)
+		cout << "***** The Winner is: " << winners.back()->getName() << " *****" << endl;
+	else if (winners.size() == 2)
+	{
+		string second = winners.back()->getName();
+		winners.pop_back();
+		string first = winners.back()->getName();		
+		winners.pop_back();
+		
+		cout << "***** The winners are: " << first << " and " << second << " *****" << endl;
+	}
 }
 
 void Game::printNumberOfTurns()
 {
-	cout << "Turn " << this->_numberOfTurns + 1 << endl;
+	cout << "Number of turns: " << this->_numberOfTurns << endl;
 }
 
 

@@ -35,7 +35,8 @@ public:
 	list<Card*> giveMePlease(CardValue card_value, Deck * deck); 
 	void discardSets();
 	string toString();
-	
+
+	virtual string getPlayDecision(vector<Player*> players) = 0;
 	virtual void play(Deck* deck, vector<Player*> players) = 0;
 };
 
@@ -49,6 +50,7 @@ public:
 
 	PlayerType1 & operator=(const PlayerType1 & other); /* copy assignment */
 	virtual void play(Deck* deck, vector<Player * > players) override;
+	virtual string getPlayDecision(vector<Player*> players) override;
 };
 
 class PlayerType2 : public Player 
@@ -61,6 +63,7 @@ public:
 
 	PlayerType2 & operator=(const PlayerType2 & other); /* copy assignment */
 	virtual void play(Deck* deck, vector<Player * > players) override;
+	virtual string getPlayDecision(vector<Player*> players) override;
 };
 
 class PlayerType3 : public Player 
@@ -75,6 +78,7 @@ public:
 
 	PlayerType3 & operator=(const PlayerType3 & other); /* copy assignment */
 	virtual void play(Deck* deck, vector<Player * > players) override;
+	virtual string getPlayDecision(vector<Player*> players) override;
 };
 
 class PlayerType4 : public Player 
@@ -89,6 +93,7 @@ public:
 
 	PlayerType4 & operator=(const PlayerType4 & other); /* copy assignment */
 	virtual void play(Deck* deck, vector<Player * > players) override;
+	virtual string getPlayDecision(vector<Player*> players) override;
 };
 
 #endif

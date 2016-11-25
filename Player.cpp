@@ -203,6 +203,14 @@ PlayerType1::PlayerType1(const PlayerType1 & other) : Player(other._name, other.
  * -----------------------------------------------------------
  */
 
+string PlayerType1::getPlayDecision(vector<Player*> players)
+{
+	CardValue card_value = getMostAppearancesCard();
+	Player * player = getMostCardsPlayer(players);
+	
+	return getName() + " asked " + player->getName() + " for the value " + card_value.toString();
+}
+
 PlayerType1 & PlayerType1::operator=(const PlayerType1 & other)
 {
 	copyPlayer(&other);
@@ -215,7 +223,6 @@ void PlayerType1::play(Deck* deck, vector<Player * > players)
 	CardValue card_value = getMostAppearancesCard();
 	Player * most_cards_player = getMostCardsPlayer(players);
 	
-	cout << getName() << " asked " << most_cards_player->getName() << " for the value " << card_value.toString() << endl;
 	list<Card*> given_cards = most_cards_player->giveMePlease(card_value, deck);
 	
 	if (given_cards.size() == 0)
@@ -296,13 +303,18 @@ PlayerType2 & PlayerType2::operator=(const PlayerType2 & other)
 	return *this;
 }
 
+string PlayerType2::getPlayDecision(vector<Player*> players)
+{
+	CardValue card_value = getLeastAppearancesCard();
+	Player * player = getMostCardsPlayer(players);
+	
+	return getName() + " asked " + player->getName() + " for the value " + card_value.toString();
+}
 
 void PlayerType2::play(Deck* deck, vector<Player * > players)
 {
 	CardValue card_value = getLeastAppearancesCard();
 	Player * most_cards_player = getMostCardsPlayer(players);
-	
-	cout << getName() << " asked " << most_cards_player->getName() << " for the value " << card_value.toString() << endl;
 
 	list<Card*> given_cards = most_cards_player->giveMePlease(card_value, deck);
 	
@@ -397,6 +409,19 @@ CardValue PlayerType3::getHighestCard()
  * -----------------------------------------------------------
  */
 
+string PlayerType3::getPlayDecision(vector<Player*> players)
+{
+	if (getPosition() == this->_nextAskedPlayer)
+	{
+		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1);
+	}
+
+	Player* player = getPlayerByPosition(this->_nextAskedPlayer, players);
+	CardValue card_value = getHighestCard();
+	
+	return getName() + " asked " + player->getName() + " for the value " + card_value.toString();
+}
+
 PlayerType3 & PlayerType3::operator=(const PlayerType3 & other)
 {
 	copyPlayer(&other);
@@ -418,8 +443,6 @@ void PlayerType3::play(Deck* deck, vector<Player * > players)
 	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1); /* Increase the position for the next turn */
 
 	CardValue card_value = getHighestCard();
-
-	cout << getName() << " asked " << player->getName() << " for the value " << card_value.toString() << endl;
 
 	list<Card*> given_cards = player->giveMePlease(card_value, deck);
 
@@ -473,6 +496,19 @@ CardValue PlayerType4::getLowestCard()
  * -----------------------------------------------------------
  */
 
+string PlayerType4::getPlayDecision(vector<Player*> players)
+{
+	if (getPosition() == this->_nextAskedPlayer)
+	{
+		this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1);
+	}
+
+	Player* player = getPlayerByPosition(this->_nextAskedPlayer, players);
+	CardValue card_value = getLowestCard();
+
+	return getName() + " asked " + player->getName() + " for the value " + card_value.toString();
+}
+
 PlayerType4 & PlayerType4::operator=(const PlayerType4 & other)
 {
 	copyPlayer(&other);
@@ -493,8 +529,6 @@ void PlayerType4::play(Deck* deck, vector<Player * > players)
 	this->_nextAskedPlayer = (this->_nextAskedPlayer + 1) % (players.size() + 1); /* Increase the position for the next turn */
 
 	CardValue card_value = getLowestCard();
-
-	cout << getName() << " asked " << player->getName() << " for the value " << card_value.toString() << endl;
 
 	list<Card*> given_cards = player->giveMePlease(card_value, deck);
 
