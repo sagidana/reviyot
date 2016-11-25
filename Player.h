@@ -18,6 +18,7 @@ private:
 protected:
 	string _name;
 	int _position;
+	
 	void copyPlayer(const Player * other);
 	Player* getMostCardsPlayer(vector<Player*> players);	
 	Player* getPlayerByPosition(int position, vector<Player*> players);

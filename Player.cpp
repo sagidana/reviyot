@@ -14,7 +14,10 @@ Player::Player(const Player & other)
 	copyPlayer(&other);
 }
 
-Player::~Player() { }
+Player::~Player() 
+{
+	uninitializeCards();
+}
 
 /* Private methods:
  * -----------------------------------------------------------

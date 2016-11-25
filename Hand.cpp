@@ -33,7 +33,7 @@ Hand::Hand(const Hand & other)
 
 Hand::~Hand()
 {
-	this->_cards.clear();
+	uninitializeCards();
 }
 
 /* Private methods:
