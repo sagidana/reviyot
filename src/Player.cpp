@@ -9,7 +9,7 @@
 
 Player::Player(string name, int position) : _name(name), _position(position) { }
 
-Player::Player(const Player & other)
+Player::Player(const Player & other) : Player(other._name, other._position)
 {
 	copyPlayer(&other);
 }
@@ -388,10 +388,9 @@ CardValue PlayerType2::getLeastAppearancesCard()
 
 PlayerType3::PlayerType3(string name, int position) : Player(name, position), _nextAskedPlayer(0) { }
 
-PlayerType3::PlayerType3(const PlayerType3 & other) : Player(other._name, other._position)
+PlayerType3::PlayerType3(const PlayerType3 & other) : Player(other._name, other._position), _nextAskedPlayer(other._nextAskedPlayer)
 {
 	copyPlayer(&other);
-	this->_nextAskedPlayer = other._nextAskedPlayer;
 }
 
 /* Protected methods
@@ -475,10 +474,9 @@ void PlayerType3::play(Deck* deck, vector<Player * > players)
 
 PlayerType4::PlayerType4(string name, int position) : Player(name, position), _nextAskedPlayer(0) { }
 
-PlayerType4::PlayerType4(const PlayerType4 & other) : Player(other._name, other._position)
+PlayerType4::PlayerType4(const PlayerType4 & other) : Player(other._name, other._position), _nextAskedPlayer(other._nextAskedPlayer)
 {
 	copyPlayer(&other);
-	this->_nextAskedPlayer = other._nextAskedPlayer;
 }
 
 /* Protected methods

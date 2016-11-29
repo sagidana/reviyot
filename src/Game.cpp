@@ -7,19 +7,11 @@
  * -----------------------------------------------------------
  */
 
-Game::Game(char* configurationFile)
-{
-	this->_configurationFile = configurationFile;
-	this->_numberOfTurns = 0;
-}
+Game::Game(char* configurationFile) : _configurationFile(configurationFile), _verbal(false), players(vector<Player*>()), deck(Deck()), _numberOfTurns(0) { }
 
-Game::Game(const Game& other)
+Game::Game(const Game& other) : _configurationFile(other._configurationFile), _verbal(other._verbal), players(vector<Player*>()), deck(other.deck), _numberOfTurns(other._numberOfTurns)
 {
 	uninitializePlayers();
-	
-	this->_configurationFile = other._configurationFile;
-	this->_verbal = other._verbal;
-	this->deck = other.deck;
 	
 	for (auto it=other.players.begin(); it!=other.players.end(); ++it)
 	{

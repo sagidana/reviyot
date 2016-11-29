@@ -13,13 +13,9 @@ template <typename T> bool comp(const T * const & a, const T * const & b)
  * -----------------------------------------------------------
  */
 
-Deck::Deck()
-{
-	this->_maximumNumeric = 1;
-	this->_cards.clear();
-}
+Deck::Deck() : _maximumNumeric(1), _cards(list<Card*>()) { }
 
-Deck::Deck(int n, bool ordered)
+Deck::Deck(int n, bool ordered) : Deck()
 {
 	if (n > 0)
 		this->_maximumNumeric = n;
@@ -29,7 +25,7 @@ Deck::Deck(int n, bool ordered)
 	initializeDeck(ordered);
 }
 
-Deck::Deck(const Deck & other)
+Deck::Deck(const Deck & other) : _maximumNumeric(other._maximumNumeric), _cards(list<Card*>())
 {
 	uninitializeDeck();
 	

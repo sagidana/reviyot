@@ -50,7 +50,7 @@ string CardValue::toString()
  * -----------------------------------------------------------
  */
 
-Card::Card(string card_string)
+Card::Card(string card_string) : _shape(Shape::Heart)
 {
 	switch (card_string.back())
 	{
@@ -146,7 +146,7 @@ bool Card::operator< (const Card& other) const
  * -----------------------------------------------------------
  */
 
-FigureCard::FigureCard(string card_string) : Card(card_string)
+FigureCard::FigureCard(string card_string) : Card(card_string), _figure(Figure::Ace)
 {
 	string figure_string = card_string.substr(0, card_string.size() - 1); /* Without the last letter. */
 	
@@ -235,7 +235,7 @@ CardValue FigureCard::getCardValue()
  * -----------------------------------------------------------
  */
 
-NumericCard::NumericCard(string card_string) : Card(card_string)
+NumericCard::NumericCard(string card_string) : Card(card_string), _number(0)
 {
 	string number_string = card_string.substr(0, card_string.size() - 1); /* Without the last letter. */
 	stringstream(number_string) >> this->_number;

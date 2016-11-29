@@ -13,12 +13,9 @@ template <typename T> bool comp(const T * const & a, const T * const & b)
  * -----------------------------------------------------------
  */
 
-Hand::Hand()
-{
-	this->_cards.clear();
-}
+Hand::Hand() : _cards(list<Card*>()) { }
 
-Hand::Hand(const Hand & other)
+Hand::Hand(const Hand & other) : Hand()
 {
 	uninitializeCards();
 	
